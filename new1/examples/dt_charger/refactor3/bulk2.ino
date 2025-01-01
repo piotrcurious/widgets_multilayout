@@ -434,7 +434,10 @@ MainScreen::MainScreen() {
         []() { chargerController.startCharging(); });
 }
 
+// Complete MainScreen implementation
 void MainScreen::update() {
+    Screen::update();
+    
     auto sensorData = SensorManager::readSensors();
     
     batteryWidget->updateValues(sensorData.voltage, sensorData.current);
@@ -443,4 +446,65 @@ void MainScreen::update() {
     
     // Update charge button label based on state
     chargeButton->setLabel(chargerController.isCharging() ? 
-                          "Stop Charging" : "Start</antArtifact>
+                          "Stop Charging" : "Start Charging");
+    
+    // Update title with state
+    String stateStr = chargerController.getStateString();
+    titleLabel->setText("NiMH: " + stateStr);
+}
+
+// GraphScreen Implementation
+GraphScreen::GraphScreen(const HistoryManager& history) {
+    titleLabel = addWidget<Label>(0, 0, 128, 10, "Battery Graphs", true);
+    graphWidget = addWidget<GraphWidget>(0, 12, 128, 42, history);
+    
+    switchButton = addWidget<Button>(14, 54, 100, 10, "Switch View",
+        [this]() {
+            static int currentView = 0;
+            const char* views[] = {"Voltage", "Current", "Temperature"};
+            currentView = (currentView + 1) % 3;
+            
+            GraphType types[] = {
+                GraphType::VOLTAGE_GRAPH,
+                GraphType::CURRENT_GRAPH,
+                GraphType::TEMP_DELTA_GRAPH
+            };
+            
+            graphWidget->setGraphType(types[currentView]);
+            titleLabel->setText(views[currentView]);
+        });
+}
+
+void GraphScreen::update() {
+    Screen::update();
+    
+    // Graph widget updates automatically through history
+    // No additional updates needed
+}
+
+
+/*
+// UIManager implementation completions
+enum class ScreenType {
+    MAIN_SCREEN,
+    GRAPH_SCREEN
+};
+
+enum class GraphType {
+    VOLTAGE_GRAPH,
+    CURRENT_GRAPH,
+    TEMP_DELTA_GRAPH
+};
+
+namespace IRCodes {
+    constexpr uint32_t UP = 0x18;
+    constexpr uint32_t DOWN = 0x52;
+    constexpr uint32_t LEFT = 0x08;
+    constexpr uint32_t RIGHT = 0x5A;
+    constexpr uint32_t OK = 0x1C;
+    constexpr uint32_t RED = 0x45;
+    constexpr uint32_t GREEN = 0x46;
+    constexpr uint32_t BLUE = 0x47;
+}
+
+*/
