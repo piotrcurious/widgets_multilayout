@@ -15,7 +15,7 @@ float getWattHours();
 // Defines and manages all screen layouts
 class Layouts {
 public:
-    Layouts(Display& display, DataSource& dataSource, const Theme& theme);
+    Layouts(Display& display, DataSource& dataSource, const Theme& theme, WidgetManager& manager);
     ~Layouts();
 
     Widget** getLayout(int index, int& size) const;

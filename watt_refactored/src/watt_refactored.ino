@@ -19,8 +19,8 @@ TFT_eSPI_Display display;
 #endif
 DataSource dataSource;
 Theme theme = {0x0000, 0xFFFF, 0x07E0, 0x07E0, 0xF800, 0xFFFF, 0xF800, 0x001F};
-Layouts layouts(display, dataSource, theme);
 WidgetManager widgetManager(display, dataSource);
+Layouts layouts(display, dataSource, theme, widgetManager);
 
 int currentLayoutIndex = 0;
 uint32_t lastButtonPress = 0;
@@ -42,6 +42,7 @@ void loop() {
         lastButtonPress = millis();
     }
 
-    widgetManager.update(millis());
+    widgetManager.processAll(millis());
+    widgetManager.displayVisible(millis());
     delay(100);
 }

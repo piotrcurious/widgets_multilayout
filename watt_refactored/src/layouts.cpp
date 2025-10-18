@@ -8,18 +8,26 @@ float getVolts() { return dataSource.getVolts(); }
 float getAmperes() { return dataSource.getAmperes(); }
 float getWattHours() { return dataSource.getWattHours(); }
 
-Layouts::Layouts(Display& display, DataSource& dataSource, const Theme& theme) {
+Layouts::Layouts(Display& display, DataSource& dataSource, const Theme& theme, WidgetManager& manager) {
     layoutCount = 3;
     allLayouts = new Widget**[layoutCount];
     layoutSizes = new int[layoutCount];
 
     // Define widgets
-    TextWidget* wattsWidget = new TextWidget(display, 10, 10, 220, 30, "Watts", getWatts, theme);
-    TextWidget* voltsWidget = new TextWidget(display, 10, 50, 220, 30, "Volts", getVolts, theme);
-    TextWidget* ampsWidget = new TextWidget(display, 10, 90, 220, 30, "Amps", getAmperes, theme);
-    GraphWidget* wattsGraph = new GraphWidget(display, 10, 130, 220, 100, getWatts, theme, 1500);
-    TextWidget* whWidget = new TextWidget(display, 10, 10, 220, 30, "Watt-Hours", getWattHours, theme);
-    GraphWidget* whGraph = new GraphWidget(display, 10, 50, 220, 180, getWattHours, theme, 100);
+    TextWidget* wattsWidget = new TextWidget(display, 10, 10, 220, 30, 100, 1000, "Watts", getWatts, theme);
+    TextWidget* voltsWidget = new TextWidget(display, 10, 50, 220, 30, 1000, 1000, "Volts", getVolts, theme);
+    TextWidget* ampsWidget = new TextWidget(display, 10, 90, 220, 30, 1000, 1000, "Amps", getAmperes, theme);
+    GraphWidget* wattsGraph = new GraphWidget(display, 10, 130, 220, 100, 100, 1000, getWatts, theme, 1500);
+    TextWidget* whWidget = new TextWidget(display, 10, 10, 220, 30, 1000, 1000, "Watt-Hours", getWattHours, theme);
+    GraphWidget* whGraph = new GraphWidget(display, 10, 50, 220, 180, 1000, 1000, getWattHours, theme, 100);
+
+    // Add all widgets to the manager
+    manager.add(wattsWidget);
+    manager.add(voltsWidget);
+    manager.add(ampsWidget);
+    manager.add(wattsGraph);
+    manager.add(whWidget);
+    manager.add(whGraph);
 
     // Layout 1: Watts, Volts, Amps
     layoutSizes[0] = 3;

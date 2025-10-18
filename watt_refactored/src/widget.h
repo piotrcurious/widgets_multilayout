@@ -15,7 +15,8 @@ public:
     WidgetManager(Display& display, DataSource& dataSource);
     void add(Widget* widget);
     void setLayout(Widget** layout, int size);
-    void update(uint32_t currentTime);
+    void processAll(uint32_t currentTime);
+    void displayVisible(uint32_t currentTime);
 
 private:
     Display& display;
@@ -29,22 +30,34 @@ private:
 // Abstract base class for all widgets
 class Widget {
 public:
-    Widget(Display& display, int16_t x, int16_t y, int16_t w, int16_t h);
+    Widget(Display& display, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t process_freq, uint16_t display_freq);
     virtual ~Widget() {}
-    virtual void update(uint32_t currentTime) = 0;
-    virtual void draw() = 0;
+
+    void process(uint32_t currentTime);
+    void display(uint32_t currentTime);
 
 protected:
-    Display& display;
+    virtual void processLogic() = 0;
+    virtual void displayLogic() = 0;
+
+    Display& _display;
     int16_t x, y, w, h;
+
+    uint16_t processFrequency;
+    uint32_t lastProcessTime;
+
+    uint16_t displayFrequency;
+    uint32_t lastDisplayTime;
 };
 
 // Displays a text label and a value from a data source
 class TextWidget : public Widget {
 public:
-    TextWidget(Display& display, int16_t x, int16_t y, int16_t w, int16_t h, const char* label, Getter getter, const Theme& theme);
-    void update(uint32_t currentTime) override;
-    void draw() override;
+    TextWidget(Display& display, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t process_freq, uint16_t display_freq, const char* label, Getter getter, const Theme& theme);
+
+protected:
+    void processLogic() override;
+    void displayLogic() override;
 
 private:
     const char* label;
@@ -56,10 +69,12 @@ private:
 // Displays a graph of a value from a data source
 class GraphWidget : public Widget {
 public:
-    GraphWidget(Display& display, int16_t x, int16_t y, int16_t w, int16_t h, Getter getter, const Theme& theme, float max_value);
+    GraphWidget(Display& display, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t process_freq, uint16_t display_freq, Getter getter, const Theme& theme, float max_value);
     ~GraphWidget();
-    void update(uint32_t currentTime) override;
-    void draw() override;
+
+protected:
+    void processLogic() override;
+    void displayLogic() override;
 
 private:
     Getter getter;
